@@ -5,33 +5,35 @@
 package com.despegar.highflight;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.Set;
-
 import com.despegar.highflight.utils.Matrix2DCellPosition;
 
 public class MinesweeperMatrix implements Matrix<MinesweeperCell>{
 	private MinesweeperCell[][] matrixArray;
     public MinesweeperMatrix(Integer width, Integer height){
         matrixArray = new MinesweeperCell[width][height];
-        for(int i=0;i<width;i++){
-            for(int j=0;j<height;j++){
-                matrixArray[i][j]=new MinesweeperCell();
-            }
+        this.generateMines();
+        for(int i=0;i<this.getWidth();i++){
+        	for(int j=0;j<this.getHeight();j++){
+        		matrixArray[i][j]= new MinesweeperCell();
+        		if(matrixArray[i][j].getValue().equals('*')){
+        			Matrix2DCellPosition position = new Matrix2DCellPosition(i,j);
+
+        			int numberOfMines= this.adjacentMines(getAdjacentCells(position));
+        			matrixArray[i][j].setValue(Character.toChars(numberOfMines)[0]);
+        		}
+        		else matrixArray[i][j].setValue('0');
+        	}
         }
     }
 	public void setCell(Matrix2DCellPosition position, MinesweeperCell value) {
-
         this.matrixArray[position.getRow()][position.getColumn()]=value;
-		
 	}
 
 	public void clearMatrix() {
 		this.matrixArray=null;
 		
 	}
-
 	public MinesweeperCell getCell(Matrix2DCellPosition position) {
 		return matrixArray[position.getRow()][position.getColumn()];
 	}
@@ -49,15 +51,54 @@ public class MinesweeperMatrix implements Matrix<MinesweeperCell>{
 		return this.getHeight()*this.getWidth();
 	}
 	public void generateMines(){
-		Random rand = new Random();
-		int row = rand.nextInt(this.getWidth());
-		int column = rand.nextInt(this.getHeight())-1;
+		int mines=0;
+		MinesweeperCell cell = new MinesweeperCell('*');
+		while(mines<(this.getArea()*0.15)){
+			Random rand = new Random();
+			int row = rand.nextInt(this.getWidth());
+			int column = rand.nextInt(this.getHeight())-1;
+			Matrix2DCellPosition position = new Matrix2DCellPosition(row,column);
+			if((this.adjacentMines(this.getAdjacentCells(position))<3)||!this.getCell(position).getValue().equals('*')){
+				if(this.isValidPosition(position))this.setCell(position,cell);
+				mines++;
+			}
+		}
 	}
-	public ArrayList<MinesweeperCell> getAdjacentCells(){
+	public int adjacentMines(ArrayList<MinesweeperCell> adjacentCells){
+		int mines = 0;
+		for(MinesweeperCell cell:adjacentCells){
+			if(this.thereIsMine(cell))mines++;
+		}
+		return mines;
+	}
+	public boolean thereIsMine(MinesweeperCell cell){
+		try{
+			if(cell.value.equals('*')) return true;	
+		}
+		catch(NullPointerException error){System.out.println("");}
+		return false;
+	}
+	public ArrayList<MinesweeperCell> getAdjacentCells(Matrix2DCellPosition position){
 		int[]rowIndex = new int[]{-1,0,1,-1,1,-1,0,1};
 		int[]columnIndex = new int[]{-1,-1,-1,0,0,1,1,1};
-		List<MinesweeperCell> adjacentCells = new ArrayList();
-		return null;
+		ArrayList<MinesweeperCell> adjacentCells = new ArrayList<MinesweeperCell>();
+		for(int i=0;i<8;i++){
+			Matrix2DCellPosition j = new Matrix2DCellPosition(rowIndex[i],columnIndex[i]);
+			if(isValidPosition(j)){
+				adjacentCells.add(this.getCell(j));
+			}
+		}
+		return adjacentCells;
 		
+	}
+	boolean isValidPosition(Matrix2DCellPosition position){
+		MinesweeperCell test = new MinesweeperCell();
+		try{
+			test =this.getCell(position);
+		}
+		catch(ArrayIndexOutOfBoundsException error){
+			return false;
+		}
+		return true;
 	}
 }

@@ -12,8 +12,10 @@ public class MinesweeperImp implements Minesweeper{
     MinesweeperMatrix matrix;
     Set<Matrix2DCellPosition> uncoveredCells;
     Matrix2DCellPosition lastUncoveredCell;
+    public MinesweeperImp(int width,int height){
+    	matrix = new MinesweeperMatrix(width,height);
+    }
 	public void uncover(int row, int col) {
-		// TODO Auto-generated method stub
 		
 	}
 	public void flagAsMine(int row, int col) {
@@ -25,7 +27,7 @@ public class MinesweeperImp implements Minesweeper{
 		this.matrix.getCell(position).unFlag();
 	}
 	public boolean thereIsMine(Matrix2DCellPosition position){
-		if(matrix.getCell(position).equals('*'))return true;
+		if(matrix.thereIsMine(matrix.getCell(position)))return true;
 		return false;
 	}
 	public boolean isGameOver() {
@@ -49,7 +51,17 @@ public class MinesweeperImp implements Minesweeper{
 		
 	}
 	public void displayRaw() {
-		// TODO Auto-generated method stub
-		
+		for(int i=0;i<matrix.getWidth();i++){
+			String output="";
+			for(int j=0;j<matrix.getHeight();j++){
+				if(this.thereIsMine(new Matrix2DCellPosition(i,j)))output+=1;
+				else output+=0;
+			}
+			System.out.println(output);
+		}
+	}
+	public static void main(String[] args){
+		MinesweeperImp game = new MinesweeperImp(20,20);
+		game.displayRaw();
 	}
 }
