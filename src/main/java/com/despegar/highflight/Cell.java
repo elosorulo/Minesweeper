@@ -6,4 +6,5 @@ public interface Cell <T>{
 	void setValue(T value);
 	void unFlag();
 	void flag();
+	void unCover();
 }

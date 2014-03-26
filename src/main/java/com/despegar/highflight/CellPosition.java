@@ -5,8 +5,8 @@
 package com.despegar.highflight;
 
 public interface CellPosition {
-    Integer getX();
-    Integer getY();
-    void setX(Integer x);
-    void setY(Integer y);
+    Integer getRow();
+    Integer getColumn();
+    void setRow(Integer row);
+    void setColumn(Integer column);
 }
